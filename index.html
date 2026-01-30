@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     
     <!-- Babel para transpilação em tempo real -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
         @keyframes shimmer { 100% { transform: translateX(100%); } }
@@ -65,34 +65,21 @@
     </style>
 
     <script>
-        // Configuração de ambiente
+        // Configuração de ambiente necessária antes de qualquer import
         window.process = {
             env: {
                 API_KEY: "process.env.API_KEY"
             }
         };
 
-        // Captura de erro para debug
-        window.addEventListener('error', function(event) {
-            console.error('Erro de Script:', event.error || event.message);
-        });
-
-        // O Babel Standalone usa o objeto global "Babel" (B maiúsculo)
-        // Registramos o preset ANTES de carregar o script que o utiliza
-        function registerPresets() {
-            if (window.Babel) {
-                Babel.registerPreset('gold-boss-preset', {
-                    presets: [
-                        [Babel.availablePresets['typescript'], { allExtensions: true, isTSX: true }],
-                        [Babel.availablePresets['react']]
-                    ]
-                });
-            } else {
-                // Tenta novamente em breve caso o script do Babel ainda não tenha carregado
-                setTimeout(registerPresets, 10);
+        // Captura de erro para facilitar o diagnóstico
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('Global Error:', message, 'at', source, lineno, colno);
+            const root = document.getElementById('root');
+            if (root && root.innerText.includes('Iniciando')) {
+                root.innerHTML = '<div style="color: #666; text-align: center; padding: 20px; font-size: 10px; font-family: sans-serif;">ERRO DE CARREGAMENTO NO SISTEMA.</div>';
             }
-        }
-        registerPresets();
+        };
     </script>
 
     <script type="importmap">
@@ -115,8 +102,36 @@
             Iniciando Protocolo Gold Boss...
         </div>
     </div>
-    <!-- Importante: O data-presets deve bater com o nome registrado acima -->
-    <script type="text/babel" data-type="module" data-presets="gold-boss-preset" src="./index.tsx" crossorigin></script>
+
+    <!-- Registro síncrono do preset do Babel -->
+    <script>
+      (function() {
+        const checkBabel = setInterval(() => {
+          if (window.Babel) {
+            clearInterval(checkBabel);
+            try {
+              Babel.registerPreset('gold-boss-preset', {
+                presets: [
+                  [Babel.availablePresets['typescript'], { allExtensions: true, isTSX: true }],
+                  [Babel.availablePresets['react']]
+                ]
+              });
+              
+              // Uma vez registrado, injetamos o script principal
+              const script = document.createElement('script');
+              script.type = 'text/babel';
+              script.setAttribute('data-type', 'module');
+              script.setAttribute('data-presets', 'gold-boss-preset');
+              script.src = './index.tsx';
+              script.crossOrigin = 'anonymous';
+              document.body.appendChild(script);
+            } catch (e) {
+              console.error('Falha ao registrar preset do Babel:', e);
+            }
+          }
+        }, 10);
+      })();
+    </script>
 <script type="module" src="/index.tsx"></script>
 </body>
 </html>

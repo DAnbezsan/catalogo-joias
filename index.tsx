@@ -3,21 +3,18 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 
-const init = () => {
-  const rootElement = document.getElementById('root');
-  if (!rootElement) return;
+// O Babel Standalone em modo módulo precisa que os imports sejam resolvidos corretamente.
+// O renderizador React 19 usa a nova API de root.
 
-  try {
-    const root = ReactDOM.createRoot(rootElement);
-    root.render(<App />);
-  } catch (err) {
-    console.error("Falha ao renderizar App:", err);
-  }
-};
+const rootElement = document.getElementById('root');
 
-// Garantir que o DOM está pronto antes de iniciar
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
-  init();
+if (rootElement) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
 } else {
-  window.addEventListener('DOMContentLoaded', init);
+  console.error("Elemento 'root' não encontrado no DOM.");
 }
