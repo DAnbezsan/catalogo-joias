@@ -1,20 +1,24 @@
 
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 
-// O Babel Standalone em modo módulo precisa que os imports sejam resolvidos corretamente.
-// O renderizador React 19 usa a nova API de root.
+const renderApp = () => {
+  const container = document.getElementById('root');
+  if (container) {
+    const root = createRoot(container);
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  } else {
+    console.error("Critical: Root element not found.");
+  }
+};
 
-const rootElement = document.getElementById('root');
-
-if (rootElement) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  renderApp();
 } else {
-  console.error("Elemento 'root' não encontrado no DOM.");
+  window.addEventListener('DOMContentLoaded', renderApp);
 }
