@@ -3,22 +3,20 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 
-const renderApp = () => {
-  const container = document.getElementById('root');
-  if (container) {
+const container = document.getElementById('root');
+
+if (container) {
+  try {
     const root = createRoot(container);
     root.render(
       <React.StrictMode>
         <App />
       </React.StrictMode>
     );
-  } else {
-    console.error("Critical: Root element not found.");
+  } catch (error) {
+    console.error("Falha ao renderizar App:", error);
+    container.innerHTML = '<div style="color: #666; font-family: sans-serif; text-align: center; padding-top: 50vh;">ERRO DE SISTEMA: CONSULTE O CONSOLE.</div>';
   }
-};
-
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
-  renderApp();
 } else {
-  window.addEventListener('DOMContentLoaded', renderApp);
+  console.error("Critical: Root element not found.");
 }
