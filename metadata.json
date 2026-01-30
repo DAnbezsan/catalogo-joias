@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Gold Boss Premium Catalog",
+  "description": "An elite men's semi-jewelry catalog featuring high-end 18k gold plated pieces with an integrated AI Personal Stylist powered by Gemini.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
